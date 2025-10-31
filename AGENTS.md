@@ -1,50 +1,47 @@
 # AGENTS.md
 
-## รายงานความคืบหน้า (Progress Report)
+## Core Architecture: The Guardian (MCP)
 
-**โปรเจกต์:** Clarity UI Studio
-**สถานะ:** สิ้นสุดเฟส 1 - การตั้งค่าโปรเจกต์และโครงสร้างพื้นฐาน
+The Clarity UI Studio is built around a core architectural principle called the Guardian (Master Control Program). The Guardian is a safety and quality layer that sits between the user's input (or AI-generated code) and the final rendered output. Its primary responsibilities are to protect the user from unsafe or invalid code and to create a feedback loop for continuous improvement.
 
-ผมได้ดำเนินการตั้งค่าโปรเจกต์ "Clarity UI Studio" ตามหลักการ Specification-Driven Development (SDD) ที่ระบุไว้ในเอกสาร `AGENTS.md` ฉบับเดิมเสร็จสิ้นแล้ว โดยมีรายละเอียดดังนี้:
+### The Guardian's Responsibilities
 
-1.  **การตั้งค่า Monorepo:** ได้สร้างโครงสร้างโปรเจกต์แบบ Turborepo monorepo ด้วยตนเองทั้งหมด เนื่องจากคำสั่ง `npx create-turbo@latest` ไม่สามารถทำงานในสภาพแวดล้อมอัตโนมัติได้ ซึ่งประกอบด้วย:
-    *   `apps/studio`: แอปพลิเคชันหลักที่ใช้ Next.js
-    *   `packages/ui`: ไลบรารีสำหรับ UI components ที่ใช้ร่วมกัน
-    *   `packages/tsconfig`: การตั้งค่า TypeScriptกลาง
-    *   `packages/eslint-config-acme`: การตั้งค่า ESLint กลาง
+1.  **Sanitization:** The Guardian's first responsibility is to sanitize the code to remove any potentially harmful elements, such as `<script>` or `<iframe>` tags. This prevents cross-site scripting (XSS) and other injection attacks.
 
-2.  **การแก้ไขปัญหาระหว่างการตั้งค่า:**
-    *   **NPM Workspaces:** แก้ไขไฟล์ `package.json` เพื่อให้สามารถติดตั้ง local packages (ที่ใช้ `workspace:*`) ได้สำเร็จ
-    *   **Tailwind CSS:** สร้างไฟล์ `tailwind.config.ts` ด้วยตนเอง เนื่องจาก `npx tailwindcss init` ทำงานไม่ถูกต้อง
-    *   **Development Server:** พบปัญหา `npm run dev` timeout อย่างต่อเนื่อง จึงเปลี่ยนไปใช้วิธีการตรวจสอบความถูกต้องของโปรเจกต์ด้วย `npm run build` แทน
+2.  **Validation:** The Guardian will also validate the code to ensure that it is well-formed and will not break the UI. This includes checking for things like unclosed tags and invalid attributes.
 
-3.  **การสร้างโครงสร้างแอปพลิเคชันพื้นฐาน:** ได้สร้างไฟล์และคอมโพเนนต์ที่จำเป็นสำหรับเฟส 1 ตามที่ระบุไว้:
-    *   สร้าง `state-manager.ts` สำหรับการจัดการ state ด้วย Zustand
-    *   สร้าง Placeholder components สำหรับ `Toolbar`, `CodeEditor`, และ `Preview`
-    *   อัปเดตหน้าหลัก (`app/page.tsx`) ให้มี layout แบบ 2-panel ตามที่ต้องการ
+3.  **Error Logging and Feedback Loop:** When the Guardian detects and corrects an error, it does not do so silently. Instead, it logs the error to a dedicated `jsonbin.io` bin. This log includes the original code, the sanitized code, the type of error, and a timestamp. This data is invaluable for a future feedback loop, where it can be used to train the AI to avoid making similar mistakes in the future.
 
-4.  **การตรวจสอบความถูกต้อง:** ได้ทำการรัน `npm run build` ซึ่งทำงานสำเร็จ เป็นการยืนยันว่าโครงสร้างโปรเจกต์, dependencies, และการตั้งค่าทั้งหมดถูกต้องและพร้อมสำหรับดำเนินการในเฟสต่อไป
+### The "Gradient" of Protection
 
-## แผนการดำเนินงานเฟส 2 (Phase 2 Plan): Real-time Preview
+The Guardian's protection is not a single, monolithic check. Instead, it's a "gradient" of checks that can be expanded over time. The initial implementation focuses on sanitization, but future layers could include:
 
-**เป้าหมายหลัก:** ทำให้ผู้ใช้สามารถเห็นผลลัพธ์ของโค้ดที่เขียนใน `CodeEditor` ได้ทันทีใน `Preview` component
+-   **Design System Compliance:** Checking that the code adheres to the project's design system (e.g., using the correct color tokens, spacing, etc.).
+-   **Accessibility:** Checking for common accessibility issues.
+-   **Performance:** Checking for code that could lead to poor performance.
+
+---
+
+## แผนการดำเนินงานเฟส 3 (Phase 3 Plan): Toolbar and Component Generation
+
+**Prerequisite:** The Guardian (MCP) architecture must be in place before work on Phase 3 can begin.
+
+**เป้าหมายหลัก:** สร้าง `Toolbar` ที่สามารถรับ input เป็น JSON และมีปุ่มสำหรับ generate UI components ไปยัง `CodeEditor`
 
 **ขั้นตอนการดำเนินงาน:**
 
-1.  **ปรับปรุง State Management (`lib/state-manager.ts`):**
-    *   เพิ่ม state ใหม่ใน Zustand store เพื่อจัดเก็บโค้ด (string) ที่ผู้ใช้ป้อนเข้ามา
-    *   สร้าง action สำหรับอัปเดต state ของโค้ดดังกล่าว
+1.  **พัฒนา `Toolbar` Component (`app/components/Toolbar.tsx`):**
+    *   สร้าง UI สำหรับ `Toolbar` ซึ่งประกอบด้วย:
+        *   `<textarea>` สำหรับรับ JSON input
+        *   `<button>` สำหรับ trigger การ generate component
+    *   เชื่อมต่อ `<textarea>` ของ `Toolbar` กับ `jsonInput` state ใน Zustand store
 
-2.  **พัฒนา `CodeEditor` Component (`components/CodeEditor.tsx`):**
-    *   แทนที่ placeholder เดิมด้วย `<textarea>` (หรือ code editor library เช่น CodeMirror/Monaco ในอนาคต)
-    *   เชื่อมต่อ `<textarea>` กับ Zustand store:
-        *   ดึงค่าโค้ดปัจจุบันจาก store มาแสดง
-        *   เมื่อผู้ใช้พิมพ์โค้ด ให้เรียก action ของ Zustand เพื่ออัปเดต state
+2.  **พัฒนาฟังก์ชันการ Generate Component:**
+    *   สร้าง logic ในการแปลง JSON input ที่ได้รับจาก `jsonInput` state ให้กลายเป็นโค้ด HTML/CSS (หรือ React component ในอนาคต)
+    *   เมื่อผู้ใช้กดปุ่ม "Generate" จะทำการเรียกฟังก์ชันนี้ และนำผลลัพธ์ที่ได้ไปอัปเดต `codeInput` state ใน Zustand store
 
-3.  **พัฒนา `Preview` Component (`components/Preview.tsx`):**
-    *   แทนที่ placeholder เดิมด้วย `<iframe>`
-    *   เชื่อมต่อ `<iframe>` กับ Zustand store เพื่อดึงค่าโค้ดล่าสุดมาแสดง
-    *   ใช้ `srcDoc` attribute ของ `<iframe>` เพื่อ render โค้ดของผู้ใช้ในสภาพแวดล้อมที่ปลอดภัย (sandboxed)
+3.  **การอัปเดต `CodeEditor` และ `Preview`:**
+    *   `CodeEditor` และ `Preview` ควรจะอัปเดตอัตโนมัติเมื่อ `codeInput` มีการเปลี่ยนแปลงจากการ generate component ซึ่งได้ทำไว้แล้วในเฟส 2
 
 4.  **การตรวจสอบความถูกต้อง:**
-    *   หลังจากดำเนินการเสร็จสิ้น จะทำการทดสอบโดยการพิมพ์โค้ดใน `CodeEditor` และตรวจสอบว่า `Preview` component แสดงผลลัพธ์ที่อัปเดตตามเวลาจริงหรือไม่
+    *   จะทำการทดสอบโดยการป้อน JSON input ที่ถูกต้องใน `Toolbar`, กดปุ่ม "Generate", และตรวจสอบว่า `CodeEditor` และ `Preview` แสดงผลลัพธ์ที่ถูกต้องหรือไม่

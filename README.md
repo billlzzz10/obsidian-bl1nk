@@ -1,179 +1,100 @@
-# bl1nk-web-editor
+<p align="center">
+  <img src="apps/studio/public/logo.svg" alt="Clarity UI Studio Logo" width="400"/>
+</p>
 
-<div align="center">
-  <img src="./assets/logo.svg" alt="bl1nk-web-editor Logo" width="150"/>
-  <h1 align="center">bl1nk-web-editor</h1>
-  <p align="center">
-    A Specification-Driven Development environment for building beautiful UIs, fast.
-    <br />
-    <a href="#-tech-stack"><strong>Explore the tech stack »</strong></a>
-    <br />
-    <br />
-    <a href="https://github.com/your-username/bl1nk-web-editor/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/your-username/bl1nk-web-editor/issues">Request Feature</a>
-  </p>
-</div>
+# Clarity UI Studio
 
----
+**Clarity UI Studio** is a web-based application designed to accelerate the creation of beautiful, consistent web pages and components. It provides a powerful yet simple interface for developers and designers to build UIs declaratively using a predefined design system, and then export the results into production-ready React (Next.js) code.
 
-## Table of Contents
+## Screenshot
 
-- [About The Project](#about-the-project)
-  - [The Core Application: Studio](#the-core-application-studio)
-- [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Installation & Setup](#installation--setup)
-- [Tech Stack](#-tech-stack)
-- [Project Structure](#-project-structure)
-- [Development Workflow (SDD)](#-development-workflow-sdd)
-- [Roadmap](#-roadmap)
-- [Contributing](#-contributing)
-- [License](#-license)
-- [Contact](#-contact)
+![Clarity UI Studio Screenshot](apps/studio/public/snapshot.png)
+
+## The Vision
+
+- **Rapid Creation:** Quickly build web pages using a GUI or by directly editing the underlying JSON structure.
+- **Systematic Design:** Enforce a consistent design system (colors, fonts, spacing, animations) across all applications within the organization.
+- **Flexible Workflow:** Cater to both non-programmers via a user-friendly interface and power-users who prefer a code-centric approach.
 
 ---
 
-## About The Project
-
-**bl1nk-web-editor** is a monorepo that contains the tools and libraries for a Specification-Driven Development (SDD) workflow. Its primary goal is to accelerate the creation of consistent, high-quality web pages by transforming structured specifications into production-ready code.
-
-### The Core Application: Studio
-
-The heart of this project is the **Studio** application (`apps/studio`). It's a web-based builder that allows developers to:
-*   Define UI structure using a precise JSON schema.
-*   See a live, interactive preview of the components.
-*   Manage global design tokens (colors, fonts, etc.).
-*   Generate clean, maintainable React (Next.js) code.
-
-## Getting Started
-
-Follow these steps to set up the development environment. Note that this project is designed for a **"GitHub-First"** workflow, where building and testing happen via CI/CD actions, not on a local machine.
-
-### Prerequisites
-
-- A GitHub account.
-- A Vercel or Cloudflare Pages account, connected to your GitHub.
-
-### Installation & Setup
-
-1.  **Fork/Clone the Repository:** Create your own copy of this repository on GitHub.
-2.  **Create Project Files:** Using the GitHub web editor or a connected IDE, create the files and folders as defined in the development plan. The initial file structure is provided in the [Setup Guide](./docs/SETUP.md).
-3.  **Environment Variables:** Create a `.env.local` file in the `apps/studio` directory within your Vercel/Cloudflare project settings:
-    ```
-    # Required for saving and loading templates from JSONBin.io
-    JSONBIN_API_KEY="YOUR_JSONBIN_API_KEY"
-    ```
-4.  **Deploy:** Push your changes to the main branch. Your hosting provider (Vercel/Cloudflare) will automatically install dependencies, build the project, and deploy the **Studio** application.
-
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Monorepo:** Turborepo
 - **Package Manager:** npm
 - **Framework:** Next.js 15.4+
 - **Styling:** Tailwind CSS
 - **State Management:** Zustand
-- **UI Library:** `@acme/ui` (A custom library)
-- **Data Persistence:** JSONBin.io
-
-## 📂 Project Structure
-
-```
-bl1nk-web-editor/
-├── apps/
-│   └── studio/         # The main UI builder application
-├── packages/
-│   ├── ui/             # The core UI component library
-│   ├── tsconfig/       # Shared TypeScript configurations
-│   └── ...
-├── specs/
-│   └── 001-feature/    # Specification documents for features
-└── assets/
-    └── logo.svg        # Project logo
-```
-
-## 🌊 Development Workflow (SDD)
-
-This project follows the **Specification-Driven Development (SDD)** methodology. All development starts with a specification, not with code.
-
-1.  **Specify (`/speckit.specify`):** Define the feature's requirements (`WHAT` & `WHY`).
-2.  **Plan (`/speckit.plan`):** Create a technical implementation plan (`HOW`).
-3.  **Task (`/speckit.tasks`):** Break the plan down into executable tasks.
-4.  **Implement (`/speckit.implement`):** Generate the code based on the tasks.
-
-All documentation for this process is stored in the `/specs` directory.
-
-## 🗺️ Roadmap
-
-See the [open issues](https://github.com/your-username/bl1nk-web-editor/issues) for a list of proposed features and known issues.
-
-- [x] Phase 1: Foundational Layout & State Management
-- [ ] Phase 2: Real-time Preview from JSON
-- [ ] Phase 3: Code Generation Engine
-
-## 🤝 Contributing
-
-Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**. Please refer to our [Contributing Guide](./CONTRIBUTING.md).
-
-## 📄 License
-
-Distributed under the MIT License. See `LICENSE` for more information.
-
-## 📧 Contact
-
-Your Name - [@your_twitter](https://twitter.com/your_twitter) - email@example.com
-
-Project Link: [https://github.com/your-username/bl1nk-web-editor](https://github.com/your-username/bl1nk-web-editor)
-```
-
-**`docs/SETUP.md`** (แยกรายละเอียดการตั้งค่าออกมา)
-```markdown
-# Project Setup Guide
-
-This document provides the detailed steps for setting up the `bl1nk-web-editor` project for the first time.
-
-## Initial File Structure
-
-Use your Git client or the GitHub web interface to create the following file structure. The contents for each file are provided in the "GitHub-First Development" section of the main `README.md`.
-
-- `package.json`
-- `turbo.json`
-- `apps/studio/package.json`
-- `apps/studio/next.config.mjs`
-- `apps/studio/tailwind.config.ts`
-- `apps/studio/app/layout.tsx`
-- `apps/studio/app/page.tsx`
-- `apps/studio/app/globals.css`
-- `packages/ui/package.json`
-- `packages/ui/tsup.config.ts`
-- `packages/ui/src/index.ts`
-- ... (and other shared config files)
-
-## Deployment
-
-1.  **Connect to Hosting:** In your Vercel or Cloudflare dashboard, import the GitHub repository.
-2.  **Framework Preset:** Select "Next.js".
-3.  **Root Directory:** Set this to `apps/studio`.
-4.  **Build Command:** `npm run build`
-5.  **Environment Variables:** Add `JSONBIN_API_KEY` as described in the main README.
-6.  **Deploy:** Trigger the first deployment.
-```
-
-**`CONTRIBUTING.md`**
-```markdown
-# Contributing to bl1nk-web-editor
-
-Thank you for your interest in contributing!
-
-## How to Contribute
-
-1.  Fork the Project
-2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4.  Push to the Branch (`git push origin feature/AmazingFeature`)
-5.  Open a Pull Request
-
-All development must follow the [Specification-Driven Development (SDD)](./README.md#development-workflow-sdd) process.
-```
+- **UI Library:** A custom library (`@acme/ui`) inspired by shadcn/ui.
+- **Text Editor:** Monaco Editor
+- **Data Persistence:** JSONBin.io for template storage.
 
 ---
+
+## Project Structure
+
+This project is a monorepo managed by Turborepo.
+
+- `apps/studio`: The main web application for the UI builder.
+- `apps/web`: (Optional) An example web application that consumes the `@acme/ui` package.
+- `packages/ui`: The core UI component library.
+- `packages/tsconfig`: Shared TypeScript configurations.
+- `packages/eslint-config-acme`: Shared ESLint configurations.
+
+---
+
+## Getting Started
+
+Follow these steps to set up the development environment.
+
+### Prerequisites
+
+- Node.js (v18.x or later)
+- npm (v9.x or later)
+
+### 1. Clone the Repository
+
+```bash
+git clone <your-repository-url>
+cd <your-repository-name>
+```
+
+### 2. Install Dependencies
+
+Install all dependencies for all packages and apps from the root directory.
+
+```bash
+npm install
+```
+
+### 3. Environment Variables
+
+Create a `.env.local` file in the `apps/studio` directory by copying the example file:
+
+```bash
+cp apps/studio/.env.local.example apps/studio/.env.local
+```
+
+Then, fill in the required values in `apps/studio/.env.local`:
+
+- `NEXT_PUBLIC_JSONBIN_API_KEY`: Your master API key for JSONBin.io. This is required for saving and loading templates and for logging errors.
+- `NEXT_PUBLIC_JSONBIN_ERROR_LOG_BIN_ID`: The ID of the bin where error logs will be stored.
+
+### 4. Run the Development Server
+
+Run the development server for the `studio` application. Turborepo will automatically manage dependencies and build processes.
+
+```bash
+npm run dev
+```
+
+The `studio` app will be available at `http://localhost:3000`.
+
+---
+
+## Available Scripts
+
+- `npm run dev`: Start the development servers for all apps.
+- `npm run build`: Build all apps and packages for production.
+- `npm run lint`: Lint all code in the monorepo.
+- `npm run clean`: Clean up all `node_modules` and build artifacts.

@@ -1,8 +1,10 @@
-const { resolve } = require("node:path");
+import { resolve } from "node:path";
 
 const project = resolve(process.cwd(), "tsconfig.json");
 
-module.exports = {
+/** @type {import("eslint").Linter.Config} */
+export default {
+  root: true,
   extends: [
     "eslint:recommended",
     "plugin:react/recommended",
@@ -10,7 +12,7 @@ module.exports = {
     "prettier",
     "eslint-config-turbo"
   ],
-  plugins: ["only-warn", "react", "react-hooks"],
+  plugins: ["react", "react-hooks"],
   globals: {
     React: true,
     JSX: true,
