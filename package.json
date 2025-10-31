@@ -1,5 +1,5 @@
 {
-  "name": "clarity-ui-monorepo",
+  "name": "bl1nk-web-editor",
   "private": true,
   "scripts": {
     "build": "turbo build",
