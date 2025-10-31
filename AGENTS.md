@@ -231,3 +231,233 @@ export default function StudioPage() {
 ```
 
 ---
+
+1.  **ส่วนที่ 1: เตรียมเอกสารโปรเจกต์ (Project Documentation)**
+    ผมจะสร้างไฟล์ `README.md` ที่สมบูรณ์ ซึ่งเปรียบเสมือนคู่มือประจำโปรเจกต์สำหรับทุกคน (รวมถึงตัวเราเองในอนาคต) ที่จะเข้ามาทำงานกับ "Clarity UI Studio"
+
+2.  **ส่วนที่ 2: เริ่มทำข้อ 1 - Set Up The World (The Setup Guide)**
+    ผมจะให้ชุดคำสั่ง Shell ที่ชัดเจนและเป็นขั้นตอน สำหรับการสร้างโปรเจกต์ Monorepo นี้ตั้งแต่ศูนย์จนสามารถรัน `npm run dev` ได้
+
+---
+
+### **ส่วนที่ 1: เอกสารโปรเจกต์ (README.md)**
+
+นี่คือไฟล์ `README.md` ที่คุณสามารถนำไปวางไว้ที่ Root ของ Repository บน GitHub ได้ทันที
+
+```markdown
+# Clarity UI Studio
+
+**Clarity UI Studio** is a web-based application designed to accelerate the creation of beautiful, consistent web pages and components. It provides a powerful yet simple interface for developers and designers to build UIs declaratively using a predefined design system, and then export the results into production-ready React (Next.js) code.
+
+## The Vision
+
+- **Rapid Creation:** Quickly build web pages using a GUI or by directly editing the underlying JSON structure.
+- **Systematic Design:** Enforce a consistent design system (colors, fonts, spacing, animations) across all applications within the organization.
+- **Flexible Workflow:** Cater to both non-programmers via a user-friendly interface and power-users who prefer a code-centric approach.
+
+---
+
+## Tech Stack
+
+- **Monorepo:** Turborepo
+- **Package Manager:** npm
+- **Framework:** Next.js 15.4+
+- **Styling:** Tailwind CSS
+- **State Management:** Zustand
+- **UI Library:** A custom library (`@acme/ui`) inspired by shadcn/ui.
+- **Text Editor:** Monaco Editor
+- **Data Persistence:** JSONBin.io for template storage.
+
+---
+
+## Project Structure
+
+This project is a monorepo managed by Turborepo.
+
+- `apps/studio`: The main web application for the UI builder.
+- `apps/web`: (Optional) An example web application that consumes the `@acme/ui` package.
+- `packages/ui`: The core UI component library.
+- `packages/tsconfig`: Shared TypeScript configurations.
+- `packages/eslint-config-acme`: Shared ESLint configurations.
+
+---
+
+## Getting Started
+
+Follow these steps to set up the development environment.
+
+### Prerequisites
+
+- Node.js (v18.x or later)
+- npm (v9.x or later)
+
+### 1. Clone the Repository
+
+```bash
+git clone <your-repository-url>
+cd <your-repository-name>
+```
+
+### 2. Install Dependencies
+
+Install all dependencies for all packages and apps from the root directory.
+
+```bash
+npm install
+```
+
+### 3. Environment Variables
+
+Create a `.env.local` file in the `apps/studio` directory:
+
+```bash
+# apps/studio/.env.local
+
+# Required for saving and loading templates from JSONBin.io
+JSONBIN_API_KEY="YOUR_JSONBIN_API_KEY"
+```
+
+### 4. Run the Development Server
+
+Run the development server for the `studio` application. Turborepo will automatically manage dependencies and build processes.
+
+```bash
+npm run dev
+```
+
+The `studio` app will be available at `http://localhost:3000`.
+
+---
+
+## Available Scripts
+
+- `npm run dev`: Start the development servers for all apps.
+- `npm run build`: Build all apps and packages for production.
+- `npm run lint`: Lint all code in the monorepo.
+- `npm run clean`: Clean up all `node_modules` and build artifacts.
+```
+
+---
+
+### **ส่วนที่ 2: เริ่มทำข้อ 1 - Set Up The World (คำสั่ง Shell)**
+
+นี่คือชุดคำสั่งที่คุณสามารถรันใน Terminal ของคุณเพื่อสร้างโครงสร้างโปรเจกต์ทั้งหมดได้เลย
+
+**ขั้นตอนที่ 1: สร้าง Turborepo Starter**
+
+```bash
+# สร้างโปรเจกต์ Turborepo ใหม่ด้วย npm
+npx create-turbo@latest clarity-ui-monorepo
+
+# เข้าไปในโฟลเดอร์โปรเจกต์
+cd clarity-ui-monorepo
+```
+*   เมื่อถูกถาม ให้เลือก `npm` เป็น package manager และเลือก "Web & Docs" เป็นตัวอย่างเริ่มต้น
+
+**ขั้นตอนที่ 2: ปรับโครงสร้างและลบไฟล์ที่ไม่จำเป็น**
+
+```bash
+# ลบแอปและแพ็คเกจตัวอย่างที่ไม่ต้องการ
+rm -rf apps/docs
+rm -rf packages/ui
+
+# เปลี่ยนชื่อแอป web เป็น studio
+mv apps/web apps/studio
+
+# ล้าง node_modules และไฟล์ lock เพื่อเริ่มต้นใหม่
+npm run clean && rm -f package-lock.json
+```
+
+**ขั้นตอนที่ 3: สร้าง Package `@acme/ui` ขึ้นมาใหม่**
+
+```bash
+# สร้างโฟลเดอร์สำหรับ UI package
+mkdir -p packages/ui/src
+
+# สร้าง package.json สำหรับ UI package
+cat <<EOT > packages/ui/package.json
+{
+  "name": "@acme/ui",
+  "version": "0.0.0",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts --external react",
+    "dev": "tsup src/index.ts --format esm,cjs --dts --external react --watch",
+    "lint": "eslint . --max-warnings 0"
+  },
+  "devDependencies": {
+    "@acme/eslint-config-acme": "workspace:*",
+    "@acme/tsconfig": "workspace:*",
+    "react": "^18.2.0",
+    "tsup": "^8.0.2",
+    "typescript": "^5.3.3"
+  }
+}
+EOT
+
+# สร้างไฟล์ tsup.config.ts สำหรับการ build
+cat <<EOT > packages/ui/tsup.config.ts
+import { defineConfig } from "tsup";
+
+export default defineConfig({
+  entry: ["src/index.ts"],
+  format: ["esm", "cjs"],
+  dts: true,
+  external: ["react"],
+  sourcemap: true,
+  clean: true,
+});
+EOT
+
+# สร้างไฟล์ index.ts เริ่มต้น
+touch packages/ui/src/index.ts
+```
+
+**ขั้นตอนที่ 4: ติดตั้ง Dependencies และตั้งค่า Tailwind CSS**
+
+```bash
+# ติดตั้ง dependencies หลักที่ root
+npm install
+
+# ติดตั้ง dependencies สำหรับแอป studio
+npm install -w studio zustand react-dropzone @monaco-editor/react framer-motion lucide-react
+
+# ติดตั้ง Tailwind CSS ในแอป studio
+npm install -w studio -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p --app -w studio
+```
+
+**ขั้นตอนที่ 5: ตั้งค่า `tailwind.config.ts` สำหรับ `studio`**
+
+เปิดไฟล์ `apps/studio/tailwind.config.ts` และแก้ไขให้เป็นดังนี้:
+
+```typescript
+import type { Config } from "tailwindcss";
+
+const config: Config = {
+  content: [
+    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",
+    // เพิ่ม path ไปยัง UI package ของเรา
+    "../../packages/ui/src/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {
+      // เราจะมาเติมค่า theme ที่นี่ในภายหลัง
+    },
+  },
+  plugins: [],
+};
+export default config;
+```
+
+**ขั้นตอนสุดท้าย: ทดสอบรันโปรเจกต์**
+
+```bash
+# กลับไปที่ root ของโปรเจกต์
+# รัน development server
+npm run dev
+```
