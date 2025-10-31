@@ -461,3 +461,102 @@ export default config;
 # รัน development server
 npm run dev
 ```
+
+แน่นอนครับ เข้าใจเลยว่าการสลับโปรเจกต์ไปมาอาจทำให้ลืมรายละเอียดได้ ผมจะสรุปสถานะปัจจุบันและเตรียมคำสั่งงานสำหรับขั้นตอนต่อไปให้ทันที พร้อมทั้งค้นหาข้อมูลเกี่ยวกับ `shadcn-mcp-server` ตามที่คุณต้องการครับ
+
+---
+
+### **สถานะปัจจุบันของโปรเจกต์ (As of Now)**
+
+เราเพิ่งทำ **Phase 1: Editor Foundation** ของโปรเจกต์ **"bl1nk-web-editor"**เสร็จสมบูรณ์ ซึ่งหมายความว่า:
+
+*   **เรามี:** โครงสร้างโปรเจกต์ Monorepo ที่พร้อมใช้งานบน GitHub และ Deploy ผ่าน Vercel/Cloudflare ได้
+*   **เราเห็น:** หน้าเว็บของแอป **Studio** ที่มี Layout สองฝั่ง (ซ้าย-ขวา) พร้อมกับ Placeholder สำหรับ `Toolbar`, `CodeEditor`, และ `Preview`
+*   **เบื้องหลัง:** เรามี State Management (Zustand) ที่พร้อมใช้งาน และโครงสร้างไฟล์ที่ถูกต้องตามหลัก SDD
+
+**พูดง่ายๆ คือ เรามี "โครงรถ" ที่แข็งแรงแล้ว แต่ยังไม่มี "เครื่องยนต์" หรือ "ระบบควบคุม" ใดๆ**
+
+---
+
+**ข้อสันนิษฐานที่เป็นไปได้ที่สุด:** คุณอาจกำลังนึกถึง **"กลไกเบื้องหลัง"** ของ `shadcn-ui` ที่ทำหน้าที่:
+*   อ่านข้อมูล Component จาก Registry (แหล่งเก็บโค้ด)
+*   จัดการ Dependencies ของแต่ละ Component
+*   คัดลอกไฟล์โค้ดของ Component นั้นๆ มาวางในโปรเจกต์ของ
+
+ขั้นตอนต่อไปคือ **Phase 2: ทำให้ Preview มีชีวิต และเชื่อมต่อกับ Editor** เราจะทำให้ฝั่งขวา (Preview) สามารถแสดงผลลัพธ์จากโค้ด JSON ที่เราพิมพ์ในฝั่งซ้าย (Editor) ได้จริงๆ
+
+นี่คือคำสั่งงานตามหลัก SDD ครับ
+
+#### **`/speckit.specify Implement a real-time preview system where the Preview Panel renders components based on JSON input from the Code Editor.`**
+
+ผมจะรับคำสั่งนี้และสร้าง Specification, Plan, และ Tasks ให้คุณทันที
+
+#### **Specification: `specs/002-realtime-preview/spec.md`**
+
+```markdown
+# Feature: 002 - Real-time Preview System
+
+**Project:** bl1nk-web-editor
+**Version:** 1.0
+**Status:** Specified
+
+## 1. Overview
+
+This feature brings the **Studio** application to life by implementing a real-time preview system. The `Preview` panel will no longer be a static placeholder; it will dynamically render actual UI components based on the JSON structure provided in the `CodeEditor`. This creates the core feedback loop for the user.
+
+## 2. User Stories
+
+- **As a User,** I want to type a valid component JSON structure into the `CodeEditor` so that I can define the UI I want to build.
+- **As a User,** I want the `Preview` panel to automatically update and display the visual representation of the JSON I just wrote, so I can see the result of my work immediately.
+- **As a Developer,** I need a robust JSON parsing and component mapping mechanism that can translate the JSON "tree" into a React component tree.
+
+## 3. Acceptance Criteria
+
+- **AC-1 (Editor Integration):** The `CodeEditor` (using Monaco Editor) must be integrated into the left panel, replacing the placeholder. User input in the editor must update the `jsonInput` state in the `useClarityStore`.
+- **AC-2 (Preview Rendering):** The `Preview` panel must contain an `iframe` to isolate the preview's styles and scripts.
+- **AC-3 (JSON-to-Component):** A recursive rendering function must be created. It must take the parsed JSON object, traverse its `layout` tree, and render the corresponding components from our `@acme/ui` library.
+- **AC-4 (Real-time Update):** When the `jsonInput` state changes, the `iframe` in the `Preview` panel must be triggered to re-render its content based on the new JSON. The `localStorage` and `postMessage` strategy will be used for this.
+- **AC-5 (Basic Components):** The system must be able to render at least two basic components from `@acme/ui`: `Button` and `Card`.
+
+## 4. Non-Functional Requirements
+
+- **NFR-1 (Isolation):** The `iframe` is critical for ensuring that the styles of the **Studio** app do not conflict with the styles of the rendered preview.
+- **NFR-2 (Error Handling):** If the user enters invalid JSON, the preview should not crash. It should either show the last valid state or display a clear error message.
+```
+
+#### **Implementation Plan: `specs/002-realtime-preview/plan.md`**
+
+```markdown
+# Implementation Plan: 002 - Real-time Preview System
+
+**Version:** 1.0
+**Status:** Planned
+
+## 1. Technical Approach
+
+1.  **Replace Placeholders:** Integrate the actual `Monaco Editor` into the `CodeEditor` component. The `Preview` component will now render an `iframe`.
+2.  **Create Preview Page:** Create a new route in Next.js (`/preview`) that will be the source for the `iframe`. This page will be responsible for rendering the UI.
+3.  **State Communication:**
+    *   The main app will listen for changes in the Zustand store's `jsonInput`.
+    *   On change, it will use `localStorage.setItem('bl1nk-editor-json', newJson)` to store the latest JSON.
+    *   It will then send a `postMessage` to the `iframe` to notify it of the update.
+4.  **Rendering Logic:**
+    *   The `/preview` page will listen for the `postMessage` event.
+    *   Upon receiving the message, it will read the JSON from `localStorage`.
+    *   It will parse the JSON and pass it to a new `JsonRenderer` component.
+    *   The `JsonRenderer` will recursively map the JSON nodes to actual `@acme/ui` components (`Button`, `Card`).
+5.  **Component Creation:** Create basic, unstyled `Button` and `Card` components in the `@acme/ui` package.
+
+## 2. File Creation & Modification Plan
+
+- **New Files:**
+  - `apps/studio/app/preview/page.tsx`: The page to be rendered inside the iframe.
+  - `apps/studio/app/components/JsonRenderer.tsx`: The recursive rendering component.
+  - `packages/ui/src/Button.tsx`: The basic Button component.
+  - `packages/ui/src/Card.tsx`: The basic Card component.
+- **Modified Files:**
+  - `apps/studio/app/components/CodeEditor.tsx`: Will be updated to include Monaco Editor.
+  - `apps/studio/app/components/Preview.tsx`: Will be updated to include the `iframe`.
+  - `apps/studio/lib/state-manager.ts`: May need a new action to trigger updates.
+  - `packages/ui/src/index.ts`: To export the new `Button` and `Card` components.
+```
