@@ -126,25 +126,6 @@ Your Name - [@your_twitter](https://twitter.com/your_twitter) - email@example.co
 Project Link: [https://github.com/your-username/bl1nk-web-editor](https://github.com/your-username/bl1nk-web-editor)
 ```
 
-**3. สร้างไฟล์เอกสารและ Assets ที่เกี่ยวข้อง**
-
-เพื่อให้ `README.md` ทำงานได้อย่างสมบูรณ์ คุณจะต้องสร้างไฟล์เหล่านี้:
-
-**`assets/logo.svg`**
-```svg
-<!-- ผมจะสร้าง SVG placeholder ง่ายๆ ให้คุณก่อน คุณสามารถแทนที่ด้วยดีไซน์ของคุณทีหลัง -->
-<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:rgb(99, 102, 241);stop-opacity:1" />
-      <stop offset="100%" style="stop-color:rgb(168, 85, 247);stop-opacity:1" />
-    </linearGradient>
-  </defs>
-  <rect width="100" height="100" rx="20" fill="url(#grad1)"/>
-  <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="monospace" font-size="60" fill="white" font-weight="bold">B</text>
-</svg>
-```
-
 **`docs/SETUP.md`** (แยกรายละเอียดการตั้งค่าออกมา)
 ```markdown
 # Project Setup Guide
